@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Recipe Sharing Platform</title>
+</head>
+<body>
+    <h1>Welcome to the Recipe Sharing Platform!</h1>
+    <ul>
+        <% recipes.forEach(recipe => { %>
+            <li><a href="/recipe/<%= recipe.id %>"><%= recipe.title %></a></li>
+        <% }) %>
+    </ul>
+    <a href="/auth/login">Login</a> | <a href="/auth/register">Register</a>
+</body>
+</html>

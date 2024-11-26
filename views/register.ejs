@@ -1,12 +1,9 @@
-<% layout('layout') %>
 <h1>Register</h1>
 <form action="/auth/register" method="POST">
-    <label for="username">Username:</label>
-    <input type="text" id="username" name="username" required>
-    <br>
-    <label for="password">Password:</label>
-    <input type="password" id="password" name="password" required>
-    <br>
+    <label>Username:</label>
+    <input type="text" name="username" required>
+    <label>Password:</label>
+    <input type="password" name="password" required>
     <button type="submit">Register</button>
 </form>
-<p>Already have an account? <a href="/auth/login">Login here</a>.</p>
+<p>Already have an account? <a href="/auth/login">Login</a></p>

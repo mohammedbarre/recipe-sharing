@@ -1,15 +1,10 @@
-const mysql = require('mysql2');
+const mysql = require('mysql2/promise');
 
-const connection = mysql.createConnection({
-    host: process.env.DB_HOST,
-    user: process.env.DB_USER,
-    password: process.env.DB_PASSWORD,
-    database: process.env.DB_NAME,
+const pool = mysql.createPool({
+    host: 'localhost',         // Database host
+    user: 'root',              // Database username
+    password: '',              // Database password (set to blank if no password)
+    database: 'recipe_sharing' // Database name
 });
 
-connection.connect((err) => {
-    if (err) throw err;
-    console.log('Connected to MySQL database');
-});
-
-module.exports = connection;
+module.exports = pool;

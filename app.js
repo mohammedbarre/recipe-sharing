@@ -1,29 +1,28 @@
 const express = require('express');
-const bodyParser = require('body-parser');
-const cookieParser = require('cookie-parser');
 const session = require('express-session');
 const path = require('path');
-require('dotenv').config();
 
 const app = express();
-const PORT = process.env.PORT || 3000;
 
 // Middleware
-app.use(bodyParser.urlencoded({ extended: true }));
-app.use(cookieParser());
-app.use(session({ secret: 'recipeSecret', resave: false, saveUninitialized: true }));
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, 'public')));
+app.use(session({
+    secret: 'your_session_secret', // Replace with your custom secret
+    resave: false,
+    saveUninitialized: true,
+}));
+
+// Set view engine
 app.set('view engine', 'ejs');
+app.set('views', path.join(__dirname, 'views'));
 
 // Routes
-const indexRoutes = require('./routes/index');
-const authRoutes = require('./routes/auth');
-const apiRoutes = require('./routes/api');
+app.use('/', require('./routes/index'));
+app.use('/auth', require('./routes/auth'));
+app.use('/api', require('./routes/api'));
 
-app.use('/', indexRoutes);
-app.use('/auth', authRoutes);
-app.use('/api', apiRoutes);
-
-app.listen(PORT, () => {
-    console.log(`Server running at http://localhost:${PORT}`);
-});
+// Start server on localhost:8000
+const PORT = 8000;
+app.listen(PORT, () => console.log(`Server running on http://localhost:${PORT}`));

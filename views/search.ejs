@@ -1,17 +1,10 @@
-<% layout('layout') %>
 <h1>Search Results</h1>
 <form action="/search" method="GET">
-    <label for="query">Search:</label>
-    <input type="text" id="query" name="query" value="<%= query || '' %>">
+    <input type="text" name="q" value="<%= query %>" placeholder="Search recipes...">
     <button type="submit">Search</button>
 </form>
-
-<% if (results && results.length > 0) { %>
-    <ul>
-        <% results.forEach(result => { %>
-            <li><strong><%= result.name %></strong>: <%= result.description %></li>
-        <% }); %>
-    </ul>
-<% } else { %>
-    <p>No results found.</p>
-<% } %>
+<ul>
+    <% results.forEach(recipe => { %>
+        <li><%= recipe.name %>: <%= recipe.description %></li>
+    <% }); %>
+</ul>

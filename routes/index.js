@@ -1,40 +1,30 @@
 const express = require('express');
-const router = express.Router();
 const db = require('../models/db');
+const router = express.Router();
 
 // Home Page
-router.get('/', (req, res) => {
-    db.query('SELECT * FROM recipes LIMIT 5', (err, results) => {
-        if (err) throw err;
-        res.render('index', { recipes: results });
-    });
-});
+router.get('/', (req, res) => res.render('_layout', { view: 'index', title: 'Home', user: req.session.user }));
 
 // About Page
-router.get('/about', (req, res) => {
-    res.render('about');
+router.get('/about', (req, res) => res.render('_layout', { view: 'about', title: 'About Us', user: req.session.user }));
+
+// Add Recipe Page
+router.get('/add-recipe', (req, res) => {
+    if (!req.session.user) return res.redirect('/auth/login');
+    res.render('_layout', { view: 'add-recipe', title: 'Add Recipe', user: req.session.user });
+});
+router.post('/add-recipe', async (req, res) => {
+    const { name, description } = req.body;
+    const userId = req.session.user.id;
+    await db.query('INSERT INTO recipes (name, description, user_id) VALUES (?, ?, ?)', [name, description, userId]);
+    res.redirect('/');
 });
 
-// Search Page
-router.get('/search', (req, res) => {
-    res.render('search', { results: null });
-});
-
-router.post('/search', (req, res) => {
-    const { keyword } = req.body;
-    db.query('SELECT * FROM recipes WHERE title LIKE ?', [`%${keyword}%`], (err, results) => {
-        if (err) throw err;
-        res.render('search', { results });
-    });
-});
-
-// Recipe Details Page
-router.get('/recipe/:id', (req, res) => {
-    const recipeId = req.params.id;
-    db.query('SELECT * FROM recipes WHERE id = ?', [recipeId], (err, results) => {
-        if (err) throw err;
-        res.render('recipe', { recipe: results[0] });
-    });
+// Search Recipes
+router.get('/search', async (req, res) => {
+    const query = req.query.q || '';
+    const [results] = await db.query('SELECT * FROM recipes WHERE name LIKE ?', [`%${query}%`]);
+    res.render('_layout', { view: 'search', title: 'Search Results', query, results, user: req.session.user });
 });
 
 module.exports = router;

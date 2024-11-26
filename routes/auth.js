@@ -1,41 +1,34 @@
 const express = require('express');
 const bcrypt = require('bcrypt');
-const router = express.Router();
 const db = require('../models/db');
+const router = express.Router();
 
-// Register
+// Register User
 router.get('/register', (req, res) => {
-    res.render('register');
+    res.render('_layout', { view: 'register', title: 'Register', user: null })
 });
 
 router.post('/register', async (req, res) => {
     const { username, password } = req.body;
     const hashedPassword = await bcrypt.hash(password, 10);
-    db.query('INSERT INTO users (username, password) VALUES (?, ?)', [username, hashedPassword], (err) => {
-        if (err) throw err;
-        res.redirect('/auth/login');
-    });
+    await db.query('INSERT INTO users (username, password) VALUES (?, ?)', [username, hashedPassword]);
+    res.redirect('/auth/login');
 });
 
-// Login
-router.get('/login', (req, res) => {
-    res.render('login');
-});
-
-router.post('/login', (req, res) => {
+// Login User
+router.get('/login', (req, res) => res.render('_layout', { view: 'login', title: 'Login', user: null }));
+router.post('/login', async (req, res) => {
     const { username, password } = req.body;
-    db.query('SELECT * FROM users WHERE username = ?', [username], async (err, results) => {
-        if (err) throw err;
-        if (results.length > 0 && await bcrypt.compare(password, results[0].password)) {
-            req.session.user = results[0];
-            res.redirect('/');
-        } else {
-            res.redirect('/auth/login');
-        }
-    });
+    const [user] = await db.query('SELECT * FROM users WHERE username = ?', [username]);
+    if (user.length && await bcrypt.compare(password, user[0].password)) {
+        req.session.user = user[0];
+        res.redirect('/');
+    } else {
+        res.redirect('/auth/login');
+    }
 });
 
-// Logout
+// Logout User
 router.get('/logout', (req, res) => {
     req.session.destroy();
     res.redirect('/');

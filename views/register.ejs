@@ -1,9 +1,62 @@
 <h1>Register</h1>
-<form action="/auth/register" method="POST">
-    <label>Username:</label>
-    <input type="text" name="username" required>
-    <label>Password:</label>
-    <input type="password" name="password" required>
-    <button type="submit">Register</button>
+
+<form action="/auth/register" method="POST" id="registration-form">
+    <label for="username">Username:</label>
+    <input type="text" name="username" id="username" required>
+
+    <label for="password">Password:</label>
+    <input type="password" name="password" id="password" required>
+
+    <p id="password-rules-title">Your password must include:</p>
+    <ul id="password-rules">
+        <li id="rule-length">At least 8 characters</li>
+        <li id="rule-uppercase">At least 1 uppercase letter</li>
+        <li id="rule-lowercase">At least 1 lowercase letter</li>
+        <li id="rule-number">At least 1 number</li>
+        <li id="rule-special">At least 1 special character (!@#$%^&*)</li>
+    </ul>
+
+    <button type="submit" id="register-button" disabled>Register</button>
 </form>
+
 <p>Already have an account? <a href="/auth/login">Login</a></p>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const passwordInput = document.getElementById('password');
+        const registerButton = document.getElementById('register-button');
+
+        const rules = {
+            length: document.getElementById('rule-length'),
+            uppercase: document.getElementById('rule-uppercase'),
+            lowercase: document.getElementById('rule-lowercase'),
+            number: document.getElementById('rule-number'),
+            special: document.getElementById('rule-special'),
+        };
+
+        const validatePassword = () => {
+            const password = passwordInput.value;
+
+            // Check each rule
+            const isValidLength = password.length >= 8;
+            const hasUppercase = /[A-Z]/.test(password);
+            const hasLowercase = /[a-z]/.test(password);
+            const hasNumber = /\d/.test(password);
+            const hasSpecialChar = /[!@#$%^&*]/.test(password);
+
+            // Update the rules list
+            rules.length.style.color = isValidLength ? 'green' : 'red';
+            rules.uppercase.style.color = hasUppercase ? 'green' : 'red';
+            rules.lowercase.style.color = hasLowercase ? 'green' : 'red';
+            rules.number.style.color = hasNumber ? 'green' : 'red';
+            rules.special.style.color = hasSpecialChar ? 'green' : 'red';
+
+            // Enable/Disable the Register button
+            const isPasswordValid = isValidLength && hasUppercase && hasLowercase && hasNumber && hasSpecialChar;
+            registerButton.disabled = !isPasswordValid;
+        };
+
+        // Add event listener to password input
+        passwordInput.addEventListener('input', validatePassword);
+    });
+</script>

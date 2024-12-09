@@ -2,8 +2,8 @@ const mysql = require('mysql2/promise');
 
 const pool = mysql.createPool({
     host: 'localhost',         // Database host
-    user: 'root',              // Database username
-    password: '',              // Database password (set to blank if no password)
+    user: 'recipe_user',       // Dedicated database user
+    password: 'securepassword123', // Password for the 'recipe_user'
     database: 'recipe_sharing' // Database name
 });
 

@@ -1,0 +1,54 @@
+<h1><%= recipe.name %></h1>
+<img src="<%= recipe.thumbnail_url %>" alt="<%= recipe.name %>" style="width: 300px;">
+
+<h2>Ingredients:</h2>
+<ul>
+    <% if (recipe.sections && recipe.sections.length > 0) { %>
+        <% recipe.sections.forEach(section => { %>
+            <% section.components.forEach(ingredient => { %>
+                <li><%= ingredient.raw_text %></li>
+            <% }); %>
+        <% }); %>
+    <% } else { %>
+        <p>No ingredients available.</p>
+    <% } %>
+</ul>
+
+<h2>Instructions:</h2>
+<ol>
+    <% if (recipe.instructions && recipe.instructions.length > 0) { %>
+        <% recipe.instructions.forEach(step => { %>
+            <li><%= step.display_text %></li>
+        <% }); %>
+    <% } else { %>
+        <p>No instructions available.</p>
+    <% } %>
+</ol>
+
+<!-- Save Button -->
+<button id="save-recipe" data-recipe-id="<%= recipe.id %>">Save Recipe</button>
+
+<script>
+    document.getElementById('save-recipe').addEventListener('click', async function() {
+        const recipeId = this.dataset.recipeId;
+
+        try {
+            const response = await fetch('/api/save-recipe', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ recipeId }),
+            });
+
+            if (response.ok) {
+                alert('Recipe saved successfully!');
+            } else {
+                alert('Failed to save recipe.');
+            }
+        } catch (error) {
+            console.error('Error saving recipe:', error);
+            alert('An error occurred. Please try again.');
+        }
+    });
+</script>

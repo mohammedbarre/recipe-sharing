@@ -1,6 +1,8 @@
 const express = require('express');
 const session = require('express-session');
 const path = require('path');
+const dotenv = require('dotenv');
+dotenv.config();
 
 const app = express();
 
@@ -9,20 +11,25 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(session({
-    secret: 'your_session_secret', // Replace with your custom secret
+    secret: process.env.SESSION_SECRET || 'your_session_secret',
     resave: false,
     saveUninitialized: true,
 }));
 
-// Set view engine
+// View Engine
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
 
 // Routes
 app.use('/', require('./routes/index'));
-app.use('/auth', require('./routes/auth'));
 app.use('/api', require('./routes/api'));
+app.use('/auth', require('./routes/auth')); // Added authentication routes
 
-// Start server on localhost:8000
-const PORT = 8000;
+// Handle 404 Error
+app.use((req, res) => {
+    res.status(404).send('Page Not Found');
+});
+
+// Start Server
+const PORT = process.env.PORT || 8000;
 app.listen(PORT, () => console.log(`Server running on http://localhost:${PORT}`));

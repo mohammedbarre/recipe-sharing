@@ -4,13 +4,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><%= title %></title>
-    <link rel="stylesheet" href="/css/styles.css">
+    <link rel="stylesheet" href="/styles.css">
 </head>
 <body>
     <header>
         <nav>
             <a href="/">Home</a>
             <a href="/about">About</a>
+            <a href="/search">Search Recipes</a>
             <% if (user) { %>
                 <a href="/add-recipe">Add Recipe</a>
                 <a href="/auth/logout">Logout</a>
@@ -23,5 +24,9 @@
     <main>
         <%- include(view) %>
     </main>
+    <footer>
+        <p>&copy; 2024 Recipe Sharing App. All rights reserved.</p>
+    </footer>
+    <script src="/js/script.js"></script>
 </body>
 </html>

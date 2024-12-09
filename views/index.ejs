@@ -1,8 +1,53 @@
-<h1>Welcome to the Recipe Sharing App</h1>
-<p>Discover and share amazing recipes!</p>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Recipe Categories</title>
+    <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+    <header>
+        
+    </header>
 
-<% if (user) { %>
-    <p>Hello, <strong><%= user.username %></strong>! Ready to add a new recipe? <a href="/add-recipe">Click here</a>.</p>
-<% } else { %>
-    <p><a href="/auth/login">Log in</a> or <a href="/auth/register">register</a> to start sharing your recipes!</p>
-<% } %>
+    <main>
+        <h1>Welcome to Recipe Categories</h1>
+
+        <div id="categories">
+            <h2>Choose a Category</h2>
+            <div class="category" data-category="Desserts">
+                <img src="/images/desserts.jpg" alt="Desserts" class="category-img">
+                <p>Discover Desserts</p>
+            </div>
+            <div class="category" data-category="Main Course">
+                <img src="/main-course.jpg" alt="Main Course" class="category-img">
+                <p>Main Course Recipes</p>
+            </div>
+            <div class="category" data-category="Vegan">
+                <img src="/vegan.jpg" alt="Vegan" class="category-img">
+                <p>Vegan Recipes</p>
+            </div>
+            <div class="category" data-category="Vegetarian">
+                <img src="/vegetarian.jpg" alt="Vegetarian" class="category-img">
+                <p>Vegetarian Recipes</p>
+            </div>
+        </div>
+
+        <div id="recipes-section" style="display:none;">
+            <h2 id="category-title"></h2>
+            <div id="recipe-list"></div>
+            <form id="search-form">
+                <input type="text" name="q" placeholder="Search within this category" required>
+                <button type="submit">Search</button>
+            </form>
+        </div>
+    </main>
+
+    <footer>
+        <p>&copy; 2024 Recipe Sharing App</p>
+    </footer>
+
+    <script src="/script.js"></script>
+</body>
+</html>

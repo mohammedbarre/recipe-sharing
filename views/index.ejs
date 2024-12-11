@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Recipe Categories</title>
-    <link rel="stylesheet" href="/styles.css">
 </head>
 <body>
     <header>
@@ -16,21 +15,29 @@
 
         <div id="categories">
             <h2>Choose a Category</h2>
-            <div class="category" data-category="Desserts">
-                <img src="/images/desserts.jpg" alt="Desserts" class="category-img">
-                <p>Discover Desserts</p>
+            <div class="category">
+                <a href="/search.ejs?category=Desserts">
+                    <img src="/images/desserts.jpg" alt="Desserts" class="category-img">
+                    <p>Discover Desserts</p>
+                </a>
             </div>
-            <div class="category" data-category="Main Course">
-                <img src="/main-course.jpg" alt="Main Course" class="category-img">
-                <p>Main Course Recipes</p>
+            <div class="category">
+                <a href="/search.ejs?category=Main%20Course">
+                    <img src="/main-course.jpg" alt="Main Course" class="category-img">
+                    <p>Main Course Recipes</p>
+                </a>
             </div>
-            <div class="category" data-category="Vegan">
-                <img src="/vegan.jpg" alt="Vegan" class="category-img">
-                <p>Vegan Recipes</p>
+            <div class="category">
+                <a href="/search.ejs?category=Vegan">
+                    <img src="/vegan.jpg" alt="Vegan" class="category-img">
+                    <p>Vegan Recipes</p>
+                </a>
             </div>
-            <div class="category" data-category="Vegetarian">
-                <img src="/vegetarian.jpg" alt="Vegetarian" class="category-img">
-                <p>Vegetarian Recipes</p>
+            <div class="category">
+                <a href="/search.ejs?category=Vegetarian">
+                    <img src="/vegetarian.jpg" alt="Vegetarian" class="category-img">
+                    <p>Vegetarian Recipes</p>
+                </a>
             </div>
         </div>
 

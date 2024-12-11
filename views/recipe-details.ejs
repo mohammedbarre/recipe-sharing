@@ -26,23 +26,23 @@
 </ol>
 
 <!-- Save Button -->
-<button id="save-recipe" data-recipe-id="<%= recipe.id %>">Save Recipe</button>
+<button id="save-recipe" data-recipe-id="<%= recipe.id %>" data-recipe-name="<%= recipe.name %>">Save Recipe</button>
 
 <script>
     document.getElementById('save-recipe').addEventListener('click', async function() {
         const recipeId = this.dataset.recipeId;
+        const recipeName = this.dataset.recipeName;
 
         try {
-            const response = await fetch('/api/save-recipe', {
+            const response = await fetch('/save-recipe', {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ recipeId }),
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ recipeId, recipeName }),
             });
 
             if (response.ok) {
                 alert('Recipe saved successfully!');
+                window.location.href = '/saved-recipes'; // Redirect to saved recipes page
             } else {
                 alert('Failed to save recipe.');
             }

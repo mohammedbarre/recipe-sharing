@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Profile</title>
+    <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+    <header>
+        <nav>
+            <div class="nav-left">
+                <span class="logo">Recipe Sharing</span>
+            </div>
+            <div class="nav-right">
+                <a href="/">Home</a>
+                <a href="/about">About</a>
+                <a href="/search">Search Recipes</a>
+                <a href="/auth/logout">Logout</a>
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <h1>My Profile</h1>
+
+        <!-- Saved Recipes Section -->
+        <h2>Saved Recipes</h2>
+        <ul>
+            <% if (savedRecipes && savedRecipes.length > 0) { %>
+                <% savedRecipes.forEach(recipe => { %>
+                    <li>
+                        <h3>
+                            <a href="/recipe-details/<%= recipe.recipe_id %>"><%= recipe.recipe_name %></a>
+                        </h3>
+                        <button class="remove-recipe" data-id="<%= recipe.recipe_id %>">Remove</button>
+                    </li>
+                <% }) %>
+            <% } else { %>
+                <p>No recipes saved yet.</p>
+            <% } %>
+        </ul>
+
+        <!-- Change Password Section -->
+        <h2>Change Password</h2>
+        <form action="/auth/change-password" method="POST">
+            <label for="old-password">Old Password</label>
+            <input type="password" id="old-password" name="oldPassword" required>
+            <label for="new-password">New Password</label>
+            <input type="password" id="new-password" name="newPassword" required>
+            <button type="submit">Change Password</button>
+        </form>
+    </main>
+
+    <footer>
+        <p>&copy; 2024 Recipe Sharing App. All rights reserved.</p>
+    </footer>
+
+    <script>
+        document.querySelectorAll('.remove-recipe').forEach(button => {
+            button.addEventListener('click', async (e) => {
+                const recipeId = e.target.dataset.id;
+                try {
+                    const response = await fetch('/remove-recipe', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ recipeId })
+                    });
+                    const data = await response.json();
+                    if (data.success) {
+                        alert('Recipe removed successfully');
+                        window.location.reload();
+                    } else {
+                        alert('Failed to remove recipe');
+                    }
+                } catch (error) {
+                    console.error('Error removing recipe:', error);
+                    alert('An error occurred. Please try again.');
+                }
+            });
+        });
+    </script>
+</body>
+</html>

@@ -1,11 +1,14 @@
 const express = require('express');
-const db = require('../models/db'); // Ensure Sequelize models are correctly configured
-const axios = require('axios');
+const db = require('../models/db');
 const router = express.Router();
 
-// Spoonacular API details (replace with your actual key)
-const SPOONACULAR_API_KEY = '3711375463msh659873d468ffe12p1bb860jsn11e89a12800f'; // Replace with your actual Spoonacular API Key
-const SPOONACULAR_API_URL = 'https://api.spoonacular.com/recipes/complexSearch';
+// Middleware to check authentication
+const isAuthenticated = (req, res, next) => {
+    if (!req.session.user) {
+        return res.redirect('/auth/login');
+    }
+    next();
+};
 
 // Home Page Route
 router.get('/', (req, res) => {
@@ -13,28 +16,19 @@ router.get('/', (req, res) => {
 });
 
 // Add Recipe Page Route
-router.get('/add-recipe', (req, res) => {
-    if (!req.session.user) {
-        return res.redirect('/auth/login'); // Redirect to login if user is not logged in
-    }
+router.get('/add-recipe', isAuthenticated, (req, res) => {
     res.render('_layout', { view: 'add-recipe', title: 'Add Recipe', user: req.session.user });
 });
 
 // Add Recipe Form Submission
-router.post('/add-recipe', async (req, res) => {
+router.post('/add-recipe', isAuthenticated, async (req, res) => {
     const { name, description } = req.body;
 
-    if (!req.session.user) {
-        return res.redirect('/auth/login');
-    }
-
     try {
-        // Save the recipe to the database
-        await db.Recipe.create({
-            name,
-            description,
-            userId: req.session.user.id, // Make sure `userId` column exists in your database
-        });
+        await db.query(
+            'INSERT INTO recipes (name, description, user_id) VALUES (?, ?, ?)',
+            [name, description, req.session.user.id]
+        );
         res.redirect('/');
     } catch (error) {
         console.error('Error adding recipe:', error.message);
@@ -49,24 +43,13 @@ router.post('/add-recipe', async (req, res) => {
 
 // Search Recipes Route
 router.get('/search', async (req, res) => {
-    const query = req.query.q || ''; // Default to empty string if no query provided
+    const query = req.query.q || '';
 
     try {
-        // Search recipes in the database
-        const dbResults = await db.Recipe.findAll({
-            where: {
-                name: { [db.Sequelize.Op.like]: `%${query}%` },
-            },
-        });
-
-        // Search recipes from Spoonacular API
-        const apiResponse = await axios.get(SPOONACULAR_API_URL, {
-            params: {
-                query,
-                number: 10, // Limit results to 10
-                apiKey: SPOONACULAR_API_KEY,
-            },
-        });
+        const [dbResults] = await db.query(
+            'SELECT * FROM recipes WHERE name LIKE ?',
+            [`%${query}%`]
+        );
 
         res.render('_layout', {
             view: 'search',
@@ -74,26 +57,86 @@ router.get('/search', async (req, res) => {
             user: req.session.user,
             query,
             dbResults,
-            apiResults: apiResponse.data.results || [], // Default to empty array if no results
-            error: null,
         });
     } catch (error) {
         console.error('Error during search:', error.message);
-        res.render('_layout', {
-            view: 'search',
-            title: 'Search Recipes',
-            user: req.session.user,
-            query,
-            dbResults: [],
-            apiResults: [],
-            error: 'An error occurred while searching for recipes. Please try again.',
-        });
+        res.status(500).send('An error occurred while searching.');
     }
 });
 
-// About Page Route
-router.get('/about', (req, res) => {
-    res.render('_layout', { view: 'about', title: 'About', user: req.session.user });
+// Profile Page Route
+router.get('/profile', isAuthenticated, async (req, res) => {
+    try {
+        const [savedRecipes] = await db.query(
+            'SELECT sr.recipe_id, r.name AS recipe_name FROM saved_recipes sr JOIN recipes r ON sr.recipe_id = r.id WHERE sr.user_id = ?',
+            [req.session.user.id]
+        );
+
+        res.render('_layout', {
+            view: 'profile',
+            title: 'My Profile',
+            user: req.session.user,
+            savedRecipes,
+        });
+    } catch (error) {
+        console.error('Error loading profile:', error.message);
+        res.status(500).send('An error occurred while loading the profile page.');
+    }
+});
+
+// Save Recipe Route
+router.post('/save-recipe', isAuthenticated, async (req, res) => {
+    const { recipeId } = req.body;
+
+    try {
+        await db.query('INSERT INTO saved_recipes (user_id, recipe_id) VALUES (?, ?)', [
+            req.session.user.id,
+            recipeId,
+        ]);
+        res.json({ success: true });
+    } catch (error) {
+        console.error('Error saving recipe:', error.message);
+        res.status(500).json({ success: false, error: 'Failed to save recipe.' });
+    }
+});
+
+// Remove Saved Recipe Route
+router.post('/remove-recipe', isAuthenticated, async (req, res) => {
+    const { recipeId } = req.body;
+
+    try {
+        await db.query('DELETE FROM saved_recipes WHERE user_id = ? AND recipe_id = ?', [
+            req.session.user.id,
+            recipeId,
+        ]);
+        res.json({ success: true });
+    } catch (error) {
+        console.error('Error removing recipe:', error.message);
+        res.status(500).json({ success: false, error: 'Failed to remove recipe.' });
+    }
+});
+
+// Recipe Details Route
+router.get('/recipe-details/:id', isAuthenticated, async (req, res) => {
+    const recipeId = req.params.id;
+
+    try {
+        const [recipe] = await db.query('SELECT * FROM recipes WHERE id = ?', [recipeId]);
+
+        if (!recipe || recipe.length === 0) {
+            return res.status(404).send('Recipe not found.');
+        }
+
+        res.render('_layout', {
+            view: 'recipe-details',
+            title: recipe[0].name,
+            user: req.session.user,
+            recipe: recipe[0],
+        });
+    } catch (error) {
+        console.error('Error loading recipe details:', error.message);
+        res.status(500).send('An error occurred while loading the recipe details.');
+    }
 });
 
 module.exports = router;

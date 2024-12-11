@@ -1,30 +1,35 @@
--- Create the database
+CREATE USER 'recipe_user'@'localhost' IDENTIFIED BY 'securepassword123';
+
+GRANT ALL PRIVILEGES ON recipe_sharing.* TO 'recipe_user'@'localhost';
+
+FLUSH PRIVILEGES;
+
 CREATE DATABASE recipe_sharing;
 
--- Switch to the database
 USE recipe_sharing;
 
--- Create the `users` table
 CREATE TABLE users (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    username VARCHAR(255) NOT NULL,
-    password VARCHAR(255) NOT NULL
+    username VARCHAR(255) NOT NULL UNIQUE,
+    password VARCHAR(255) NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
--- Create the `recipes` table
 CREATE TABLE recipes (
     id INT AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(255) NOT NULL,
     description TEXT NOT NULL,
     user_id INT NOT NULL,
-    FOREIGN KEY (user_id) REFERENCES users(id)
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 );
 
--- Create a new MySQL user with a username and password
-CREATE USER 'recipe_user'@'localhost' IDENTIFIED BY 'securepassword123';
+CREATE TABLE saved_recipes (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT NOT NULL,
+    recipe_id VARCHAR(255) NOT NULL,
+    saved_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+);
 
--- Grant the new user access to the `recipe_sharing` database
-GRANT ALL PRIVILEGES ON recipe_sharing.* TO 'recipe_user'@'localhost';
 
--- Apply the privilege changes
-FLUSH PRIVILEGES;

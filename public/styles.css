@@ -53,6 +53,16 @@ main {
     color: #f8f9fa; /* Light Gray Text */
 }
 
+/* Dropdown Details */
+.details-container {
+    margin-top: 10px;
+    padding: 10px;
+    background-color: #1c1c1c; /* Darker gray for dropdown */
+    border: 1px solid #444;
+    border-radius: 5px;
+    display: none; /* Initially hidden */
+}
+
 /* Buttons */
 button {
     background-color: #007bff;
@@ -68,40 +78,6 @@ button {
 button:hover {
     background-color: #0056b3;
     transform: scale(1.05);
-}
-
-/* Forms */
-form {
-    max-width: 600px;
-    margin: 20px auto;
-    padding: 20px;
-    background-color: #121212; /* Dark Background */
-    border: 1px solid #333;
-    border-radius: 5px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.8);
-}
-
-form label {
-    display: block;
-    margin-bottom: 5px;
-    font-weight: bold;
-}
-
-form input,
-form textarea {
-    width: 100%;
-    padding: 10px;
-    margin-bottom: 15px;
-    border: 1px solid #444;
-    border-radius: 5px;
-    background-color: #222;
-    color: #f8f9fa;
-}
-
-form input:focus,
-form textarea:focus {
-    border-color: #007bff;
-    box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
 }
 
 /* Footer */

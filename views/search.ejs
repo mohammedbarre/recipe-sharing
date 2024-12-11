@@ -33,9 +33,38 @@
                         listItem.innerHTML = `
                             <h3>${recipe.name}</h3>
                             <img src="${recipe.thumbnail_url}" alt="${recipe.name}" style="width: 200px;">
-                            <p><a href="/api/recipe-details/${recipe.id}" target="_blank">View Details</a></p>
+                            <button class="view-details" data-id="${recipe.id}">View Details</button>
+                            <div class="details-container" id="details-${recipe.id}" style="display: none;"></div>
                         `;
                         recipeList.appendChild(listItem);
+                    });
+
+                    document.querySelectorAll('.view-details').forEach(button => {
+                        button.addEventListener('click', async (e) => {
+                            const recipeId = button.dataset.id;
+                            const detailsContainer = document.getElementById(`details-${recipeId}`);
+
+                            if (detailsContainer.style.display === 'block') {
+                                detailsContainer.style.display = 'none';
+                                return;
+                            }
+
+                            try {
+                                const detailsResponse = await fetch(`/api/recipe-details/${recipeId}`);
+                                const detailsData = await detailsResponse.json();
+
+                                detailsContainer.innerHTML = `
+                                    <h4>Ingredients:</h4>
+                                    <ul>${detailsData.ingredients.map(ing => `<li>${ing}</li>`).join('')}</ul>
+                                    <h4>Instructions:</h4>
+                                    <ol>${detailsData.steps.map(step => `<li>${step}</li>`).join('')}</ol>
+                                `;
+                                detailsContainer.style.display = 'block';
+                            } catch (error) {
+                                console.error('Error fetching recipe details:', error);
+                                detailsContainer.innerHTML = '<p>Failed to load details.</p>';
+                            }
+                        });
                     });
                 } else {
                     recipeList.innerHTML = '<p>No recipes found. Try a different search term.</p>';

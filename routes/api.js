@@ -39,10 +39,22 @@ router.get('/recipe-details/:id', async (req, res) => {
             }
         });
 
-        res.json(response.data); // Return the API data as JSON
+        const { name, instructions, sections } = response.data;
+
+        const ingredients = sections
+            ? sections.flatMap(section => section.components.map(component => component.raw_text))
+            : [];
+
+        const steps = instructions ? instructions.map(inst => inst.display_text) : [];
+
+        res.json({
+            name,
+            ingredients,
+            steps
+        });
     } catch (error) {
         console.error('Error fetching recipe details:', error.message);
-        res.status(500).json({ error: 'Failed to fetch recipe details. Please try again later.' });
+        res.status(500).json({ error: 'Failed to fetch recipe details.' });
     }
 });
 

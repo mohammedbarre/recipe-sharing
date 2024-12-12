@@ -24,6 +24,7 @@ app.set('views', path.join(__dirname, 'views'));
 app.use('/', require('./routes/index'));
 app.use('/api', require('./routes/api'));
 app.use('/auth', require('./routes/auth')); // Added authentication routes
+app.use('/saved', require('./routes/saved')); // Added saved recipes routes
 
 // Handle 404 Error
 app.use((req, res) => {

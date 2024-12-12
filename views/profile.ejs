@@ -24,22 +24,6 @@
     <main>
         <h1>My Profile</h1>
 
-        <!-- Saved Recipes Section -->
-        <h2>Saved Recipes</h2>
-        <ul>
-            <% if (savedRecipes && savedRecipes.length > 0) { %>
-                <% savedRecipes.forEach(recipe => { %>
-                    <li>
-                        <h3>
-                            <a href="/recipe-details/<%= recipe.recipe_id %>"><%= recipe.recipe_name %></a>
-                        </h3>
-                        <button class="remove-recipe" data-id="<%= recipe.recipe_id %>">Remove</button>
-                    </li>
-                <% }) %>
-            <% } else { %>
-                <p>No recipes saved yet.</p>
-            <% } %>
-        </ul>
 
         <!-- Change Password Section -->
         <h2>Change Password</h2>

@@ -15,32 +15,6 @@ router.get('/', (req, res) => {
     res.render('_layout', { view: 'index', title: 'Home', user: req.session.user });
 });
 
-// Add Recipe Page Route
-router.get('/add-recipe', isAuthenticated, (req, res) => {
-    res.render('_layout', { view: 'add-recipe', title: 'Add Recipe', user: req.session.user });
-});
-
-// Add Recipe Form Submission
-router.post('/add-recipe', isAuthenticated, async (req, res) => {
-    const { name, description } = req.body;
-
-    try {
-        await db.query(
-            'INSERT INTO recipes (name, description, user_id) VALUES (?, ?, ?)',
-            [name, description, req.session.user.id]
-        );
-        res.redirect('/');
-    } catch (error) {
-        console.error('Error adding recipe:', error.message);
-        res.render('_layout', {
-            view: 'add-recipe',
-            title: 'Add Recipe',
-            user: req.session.user,
-            error: 'An error occurred while adding the recipe. Please try again.',
-        });
-    }
-});
-
 // Search Recipes Route
 router.get('/search', async (req, res) => {
     const query = req.query.q || '';
@@ -68,7 +42,10 @@ router.get('/search', async (req, res) => {
 router.get('/profile', isAuthenticated, async (req, res) => {
     try {
         const [savedRecipes] = await db.query(
-            'SELECT sr.recipe_id, r.name AS recipe_name FROM saved_recipes sr JOIN recipes r ON sr.recipe_id = r.id WHERE sr.user_id = ?',
+            `SELECT DISTINCT sr.recipe_id, r.name AS recipe_name, r.thumbnail_url 
+             FROM saved_recipes sr 
+             JOIN recipes r ON sr.recipe_id = r.id 
+             WHERE sr.user_id = ?`,
             [req.session.user.id]
         );
 
@@ -86,13 +63,21 @@ router.get('/profile', isAuthenticated, async (req, res) => {
 
 // Save Recipe Route
 router.post('/save-recipe', isAuthenticated, async (req, res) => {
-    const { recipeId } = req.body;
+    const { recipeId, recipeName, thumbnailUrl, description, ingredients, instructions } = req.body;
 
     try {
-        await db.query('INSERT INTO saved_recipes (user_id, recipe_id) VALUES (?, ?)', [
-            req.session.user.id,
-            recipeId,
-        ]);
+        // Save the recipe in `recipes` if not already present
+        await db.query(
+            `INSERT IGNORE INTO recipes (id, name, description, thumbnail_url, ingredients, instructions, user_id) VALUES (?, ?, ?, ?, ?, ?, ?)`,
+            [recipeId, recipeName, description, thumbnailUrl, JSON.stringify(ingredients), JSON.stringify(instructions), req.session.user.id]
+        );
+
+        // Save the recipe in `saved_recipes`
+        await db.query(
+            `INSERT IGNORE INTO saved_recipes (user_id, recipe_id) VALUES (?, ?)`,
+            [req.session.user.id, recipeId]
+        );
+
         res.json({ success: true });
     } catch (error) {
         console.error('Error saving recipe:', error.message);
@@ -127,15 +112,75 @@ router.get('/recipe-details/:id', isAuthenticated, async (req, res) => {
             return res.status(404).send('Recipe not found.');
         }
 
-        res.render('_layout', {
-            view: 'recipe-details',
-            title: recipe[0].name,
-            user: req.session.user,
-            recipe: recipe[0],
+        res.json({
+            name: recipe[0].name,
+            thumbnail_url: recipe[0].thumbnail_url,
+            description: recipe[0].description || 'No description available.',
+            ingredients: recipe[0].ingredients ? JSON.parse(recipe[0].ingredients) : ['No ingredients available.'],
+            instructions: recipe[0].instructions ? JSON.parse(recipe[0].instructions) : ['No instructions available.'],
         });
     } catch (error) {
         console.error('Error loading recipe details:', error.message);
         res.status(500).send('An error occurred while loading the recipe details.');
+    }
+});
+
+// **Saved Recipes Route with Search**
+router.get('/saved', isAuthenticated, async (req, res) => {
+    const query = req.query.q || ''; // Get the search query from the request
+    try {
+        // Fetch saved recipes with basic information
+        const [savedRecipes] = await db.query(
+            `SELECT DISTINCT sr.recipe_id, r.name AS recipe_name, r.thumbnail_url 
+             FROM saved_recipes sr 
+             JOIN recipes r ON sr.recipe_id = r.id 
+             WHERE sr.user_id = ? AND r.name LIKE ?`,
+            [req.session.user.id, `%${query}%`]
+        );
+
+        // If no saved recipes, directly render the page
+        if (savedRecipes.length === 0) {
+            return res.render('_layout', {
+                view: 'saved',
+                title: 'Saved Recipes',
+                user: req.session.user,
+                savedRecipes: [],
+                query, // Pass the search query to the view
+            });
+        }
+
+        // Extract recipe IDs from saved recipes
+        const recipeIds = savedRecipes.map(recipe => recipe.recipe_id);
+
+        // Fetch detailed information for the saved recipes
+        const [recipeDetails] = await db.query(
+            `SELECT id, description, ingredients, instructions 
+             FROM recipes 
+             WHERE id IN (?)`,
+            [recipeIds]
+        );
+
+        // Map the detailed information to the saved recipes
+        savedRecipes.forEach(savedRecipe => {
+            const details = recipeDetails.find(recipe => recipe.id === savedRecipe.recipe_id);
+            if (details) {
+                savedRecipe.description = details.description || 'No description available.';
+                savedRecipe.ingredients = details.ingredients ? JSON.parse(details.ingredients) : ['No ingredients available.'];
+                savedRecipe.instructions = details.instructions ? JSON.parse(details.instructions) : ['No instructions available.'];
+            }
+        });
+
+        // Render the saved recipes page
+        res.render('_layout', {
+            view: 'saved',
+            title: 'Saved Recipes',
+            user: req.session.user,
+            savedRecipes,
+            query, // Pass the search query to the view
+        });
+    } catch (error) {
+        console.error('Error fetching saved recipes:', error.message);
+        res.status(500).send('An error occurred while fetching saved recipes.');
     }
 });
 

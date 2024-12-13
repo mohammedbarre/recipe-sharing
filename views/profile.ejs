@@ -16,14 +16,27 @@
                 <a href="/">Home</a>
                 <a href="/about">About</a>
                 <a href="/search">Search Recipes</a>
-                <a href="/auth/logout">Logout</a>
+
+                <!-- Dropdown Menu for Logged-In State -->
+                <button class="menu-button" id="menuButton">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-list" viewBox="0 0 16 16">
+                        <path fill-rule="evenodd" d="M2.5 12a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5m0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5m0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5"/>
+                    </svg>
+                </button>
+
+                <div class="dropdown-menu" id="dropdownMenu" style="display: none;">
+                    <ul>
+                        <li><a href="/saved">Saved Recipes</a></li>
+                        <li><a href="/profile">Profile</a></li>
+                        <li><a href="/auth/logout">Logout</a></li>
+                    </ul>
+                </div>
             </div>
         </nav>
     </header>
 
     <main>
         <h1>My Profile</h1>
-
 
         <!-- Change Password Section -->
         <h2>Change Password</h2>
@@ -40,29 +53,7 @@
         <p>&copy; 2024 Recipe Sharing App. All rights reserved.</p>
     </footer>
 
-    <script>
-        document.querySelectorAll('.remove-recipe').forEach(button => {
-            button.addEventListener('click', async (e) => {
-                const recipeId = e.target.dataset.id;
-                try {
-                    const response = await fetch('/remove-recipe', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ recipeId })
-                    });
-                    const data = await response.json();
-                    if (data.success) {
-                        alert('Recipe removed successfully');
-                        window.location.reload();
-                    } else {
-                        alert('Failed to remove recipe');
-                    }
-                } catch (error) {
-                    console.error('Error removing recipe:', error);
-                    alert('An error occurred. Please try again.');
-                }
-            });
-        });
-    </script>
+    <!-- Include Dropdown Menu Logic -->
+    <script src="/js/script.js"></script>
 </body>
 </html>

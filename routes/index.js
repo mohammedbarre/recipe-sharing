@@ -5,7 +5,7 @@ const router = express.Router();
 // Middleware to check authentication
 const isAuthenticated = (req, res, next) => {
     if (!req.session.user) {
-        return res.redirect('/auth/login');
+        return res.redirect('/auth/register'); // Redirect to registration page
     }
     next();
 };
@@ -68,8 +68,9 @@ router.post('/save-recipe', isAuthenticated, async (req, res) => {
     try {
         // Save the recipe in `recipes` if not already present
         await db.query(
-            `INSERT IGNORE INTO recipes (id, name, description, thumbnail_url, ingredients, instructions, user_id) VALUES (?, ?, ?, ?, ?, ?, ?)`,
-            [recipeId, recipeName, description, thumbnailUrl, JSON.stringify(ingredients), JSON.stringify(instructions), req.session.user.id]
+            `INSERT IGNORE INTO recipes (id, name, description, thumbnail_url, ingredients, instructions) 
+             VALUES (?, ?, ?, ?, ?, ?)`,
+            [recipeId, recipeName, description, thumbnailUrl, JSON.stringify(ingredients), JSON.stringify(instructions)]
         );
 
         // Save the recipe in `saved_recipes`

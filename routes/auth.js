@@ -51,6 +51,54 @@ router.post('/login', async (req, res) => {
     }
 });
 
+// Change Password
+router.get('/change-password', (req, res) => {
+    if (!req.session.user) {
+        return res.redirect('/auth/login');
+    }
+    res.render('_layout', { view: 'change-password', title: 'Change Password', user: req.session.user });
+});
+
+router.post('/change-password', async (req, res) => {
+    const { oldPassword, newPassword } = req.body;
+
+    try {
+        if (!req.session.user) {
+            return res.redirect('/auth/login');
+        }
+
+        const [users] = await db.query('SELECT * FROM users WHERE id = ?', [req.session.user.id]);
+        const user = users[0];
+
+        // Verify old password
+        const isPasswordValid = await bcrypt.compare(oldPassword, user.password);
+        if (!isPasswordValid) {
+            return res.render('_layout', {
+                view: 'change-password',
+                title: 'Change Password',
+                user: req.session.user,
+                error: 'Incorrect old password.',
+            });
+        }
+
+        // Hash the new password
+        const hashedNewPassword = await bcrypt.hash(newPassword, 10);
+
+        // Update the password in the database
+        await db.query('UPDATE users SET password = ? WHERE id = ?', [hashedNewPassword, req.session.user.id]);
+
+        res.render('_layout', {
+            view: 'change-password',
+            title: 'Change Password',
+            user: req.session.user,
+            success: 'Password changed successfully!',
+        });
+    } catch (error) {
+        console.error('Error changing password:', error.message);
+        res.status(500).send('An error occurred while changing the password.');
+    }
+});
+
 // Logout User
 router.get('/logout', (req, res) => {
     req.session.destroy();

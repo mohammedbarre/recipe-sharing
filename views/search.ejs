@@ -1,107 +1,162 @@
-<h1>Search Recipes</h1>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Search Recipes</title>
+    <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+    <header>
+        <nav>
+            <div class="nav-left">
+                <span class="logo">Recipe Sharing</span>
+            </div>
+            <div class="nav-right">
+                <a href="/">Home</a>
+                <a href="/about">About</a>
+                <a href="/search">Search Recipes</a>
+                <% if (user) { %>
+                    <div class="dropdown">
+                        <button class="menu-button" id="menuButton">Menu</button>
+                        <div class="dropdown-menu" id="dropdownMenu" style="display: none;">
+                            <ul>
+                                <li><a href="/saved">Saved Recipes</a></li>
+                                <li><a href="/profile">Profile</a></li>
+                                <li><a href="/auth/logout">Logout</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                <% } else { %>
+                    <a href="/auth/register">Register</a>
+                <% } %>
+            </div>
+        </nav>
+    </header>
 
-<!-- Search Form -->
-<form action="/api/search-recipes" method="GET" id="search-form">
-    <input type="text" name="q" placeholder="Enter a recipe name or ingredient" required>
-    <button type="submit">Search</button>
-</form>
+    <main>
+        <h1>Search Recipes</h1>
 
-<!-- Results Section -->
-<div id="results">
-    <h2>Search Results</h2>
-    <ul id="recipe-list"></ul>
-</div>
+        <!-- Search Form -->
+        <form action="/api/search-recipes" method="GET" id="search-form">
+            <input type="text" name="q" placeholder="Enter a recipe name or ingredient" required>
+            <button type="submit">Search</button>
+        </form>
 
-<script>
-    document.addEventListener('DOMContentLoaded', () => {
-        const form = document.getElementById('search-form');
-        const recipeList = document.getElementById('recipe-list');
+        <!-- Results Section -->
+        <div id="results">
+            <h2>Search Results</h2>
+            <ul id="recipe-list"></ul>
+        </div>
+    </main>
 
-        form.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const query = form.querySelector('input[name="q"]').value;
+    <footer>
+        <p>&copy; 2024 Recipe Sharing App. All rights reserved.</p>
+    </footer>
 
-            try {
-                // Use the full path to the API on the VM
-                const response = await fetch(`https://doc.gold.ac.uk/usr/107/api/search-recipes?q=${query}`);
-                const data = await response.json();
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const form = document.getElementById('search-form');
+            const recipeList = document.getElementById('recipe-list');
 
-                recipeList.innerHTML = '';
+            form.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const query = form.querySelector('input[name="q"]').value;
 
-                if (data.results && data.results.length > 0) {
-                    data.results.forEach(recipe => {
-                        const listItem = document.createElement('li');
-                        listItem.innerHTML = `
-                            <h3>${recipe.name}</h3>
-                            <img src="${recipe.thumbnail_url}" alt="${recipe.name}" style="width: 200px;">
-                            <button class="view-details" data-id="${recipe.id}">View Details</button>
-                            <button class="save-recipe" data-id="${recipe.id}" data-name="${recipe.name}">Save Recipe</button>
-                            <div class="details-container" id="details-${recipe.id}" style="display: none;"></div>
-                        `;
-                        recipeList.appendChild(listItem);
-                    });
+                try {
+                    // Dynamically build the base URL
+                    const baseUrl = window.location.origin;
+                    const response = await fetch(`${baseUrl}/api/search-recipes?q=${query}`);
 
-                    document.querySelectorAll('.view-details').forEach(button => {
-                        button.addEventListener('click', async (e) => {
-                            const recipeId = button.dataset.id;
-                            const detailsContainer = document.getElementById(`details-${recipeId}`);
+                    if (!response.ok) {
+                        throw new Error(`Failed to fetch: ${response.status}`);
+                    }
 
-                            if (detailsContainer.style.display === 'block') {
-                                detailsContainer.style.display = 'none';
-                                return;
-                            }
+                    const data = await response.json();
+                    recipeList.innerHTML = '';
 
-                            try {
-                                const detailsResponse = await fetch(`https://doc.gold.ac.uk/usr/107/api/recipe-details/${recipeId}`);
-                                const detailsData = await detailsResponse.json();
-
-                                detailsContainer.innerHTML = `
-                                    <h4>Ingredients:</h4>
-                                    <ul>${detailsData.ingredients.map(ing => `<li>${ing}</li>`).join('')}</ul>
-                                    <h4>Instructions:</h4>
-                                    <ol>${detailsData.steps.map(step => `<li>${step}</li>`).join('')}</ol>
-                                `;
-                                detailsContainer.style.display = 'block';
-                            } catch (error) {
-                                console.error('Error fetching recipe details:', error);
-                                detailsContainer.innerHTML = '<p>Failed to load details.</p>';
-                            }
+                    if (data.results && data.results.length > 0) {
+                        data.results.forEach(recipe => {
+                            const listItem = document.createElement('li');
+                            listItem.innerHTML = `
+                                <h3>${recipe.name}</h3>
+                                <img src="${recipe.thumbnail_url}" alt="${recipe.name}" style="width: 200px;">
+                                <button class="view-details" data-id="${recipe.id}">View Details</button>
+                                <button class="save-recipe" data-id="${recipe.id}" data-name="${recipe.name}">Save Recipe</button>
+                                <div class="details-container" id="details-${recipe.id}" style="display: none;"></div>
+                            `;
+                            recipeList.appendChild(listItem);
                         });
-                    });
 
-                    document.querySelectorAll('.save-recipe').forEach(button => {
-                        button.addEventListener('click', async (e) => {
-                            const recipeId = button.dataset.id;
-                            const recipeName = button.dataset.name;
+                        // Attach event listeners for details
+                        document.querySelectorAll('.view-details').forEach(button => {
+                            button.addEventListener('click', async () => {
+                                const recipeId = button.dataset.id;
+                                const detailsContainer = document.getElementById(`details-${recipeId}`);
 
-                            try {
-                                const response = await fetch('https://doc.gold.ac.uk/usr/107/save-recipe', {
-                                    method: 'POST',
-                                    headers: {
-                                        'Content-Type': 'application/json'
-                                    },
-                                    body: JSON.stringify({ recipeId, recipeName })
-                                });
-
-                                const result = await response.json();
-                                if (result.success) {
-                                    alert('Recipe saved successfully!');
-                                } else {
-                                    alert('Failed to save recipe.');
+                                if (detailsContainer.style.display === 'block') {
+                                    detailsContainer.style.display = 'none';
+                                    return;
                                 }
-                            } catch (error) {
-                                console.error('Error saving recipe:', error);
-                                alert('An error occurred while saving the recipe. Please try again.');
-                            }
+
+                                try {
+                                    const detailsResponse = await fetch(`${baseUrl}/api/recipe-details/${recipeId}`);
+                                    if (!detailsResponse.ok) {
+                                        throw new Error(`Failed to fetch details: ${detailsResponse.status}`);
+                                    }
+
+                                    const detailsData = await detailsResponse.json();
+
+                                    detailsContainer.innerHTML = `
+                                        <h4>Ingredients:</h4>
+                                        <ul>${detailsData.ingredients.map(ing => `<li>${ing}</li>`).join('')}</ul>
+                                        <h4>Instructions:</h4>
+                                        <ol>${detailsData.steps.map(step => `<li>${step}</li>`).join('')}</ol>
+                                    `;
+                                    detailsContainer.style.display = 'block';
+                                } catch (error) {
+                                    console.error('Error fetching recipe details:', error);
+                                    detailsContainer.innerHTML = '<p>Failed to load details.</p>';
+                                }
+                            });
                         });
-                    });
-                } else {
-                    recipeList.innerHTML = '<p>No recipes found. Try a different search term.</p>';
+
+                        // Attach event listeners for saving recipes
+                        document.querySelectorAll('.save-recipe').forEach(button => {
+                            button.addEventListener('click', async () => {
+                                const recipeId = button.dataset.id;
+                                const recipeName = button.dataset.name;
+
+                                try {
+                                    const saveResponse = await fetch(`${baseUrl}/save-recipe`, {
+                                        method: 'POST',
+                                        headers: {
+                                            'Content-Type': 'application/json'
+                                        },
+                                        body: JSON.stringify({ recipeId, recipeName })
+                                    });
+
+                                    const result = await saveResponse.json();
+                                    if (result.success) {
+                                        alert('Recipe saved successfully!');
+                                    } else {
+                                        alert('Failed to save recipe.');
+                                    }
+                                } catch (error) {
+                                    console.error('Error saving recipe:', error);
+                                    alert('An error occurred while saving the recipe. Please try again.');
+                                }
+                            });
+                        });
+                    } else {
+                        recipeList.innerHTML = '<p>No recipes found. Try a different search term.</p>';
+                    }
+                } catch (error) {
+                    console.error('Error fetching recipes:', error);
+                    recipeList.innerHTML = '<p>Failed to load recipes. Please try again.</p>';
                 }
-            } catch (error) {
-                console.error('Error fetching recipes:', error);
-                recipeList.innerHTML = '<p>Failed to load recipes. Please try again.</p>';
-            }
+            });
         });
-    });
-</script>
+    </script>
+</body>
+</html>

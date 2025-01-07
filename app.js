@@ -1,12 +1,14 @@
 const express = require('express');
 const session = require('express-session');
 const path = require('path');
+const cors = require('cors'); // Import cors
 const dotenv = require('dotenv');
 dotenv.config();
 
 const app = express();
 
 // Middleware
+app.use(cors()); // Enable CORS
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, 'public')));
@@ -23,8 +25,8 @@ app.set('views', path.join(__dirname, 'views'));
 // Routes
 app.use('/', require('./routes/index'));
 app.use('/api', require('./routes/api'));
-app.use('/auth', require('./routes/auth')); // Added authentication routes
-app.use('/saved', require('./routes/saved')); // Added saved recipes routes
+app.use('/auth', require('./routes/auth')); // Authentication routes
+app.use('/saved', require('./routes/saved')); // Saved recipes routes
 
 // Handle 404 Error
 app.use((req, res) => {

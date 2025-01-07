@@ -1,22 +1,26 @@
 document.addEventListener('DOMContentLoaded', () => {
+    // Dropdown Menu Logic
     const menuButton = document.getElementById('menuButton'); // The menu button
     const dropdownMenu = document.getElementById('dropdownMenu'); // The dropdown menu
 
-    // Dropdown Menu Logic
     if (menuButton && dropdownMenu) {
+        // Toggle the dropdown menu visibility when the button is clicked
         menuButton.addEventListener('click', () => {
-            dropdownMenu.style.display = dropdownMenu.style.display === 'block' ? 'none' : 'block';
+            const isMenuVisible = dropdownMenu.style.display === 'block';
+            dropdownMenu.style.display = isMenuVisible ? 'none' : 'block';
         });
 
+        // Close the dropdown menu when clicking outside
         document.addEventListener('click', (event) => {
             if (!menuButton.contains(event.target) && !dropdownMenu.contains(event.target)) {
                 dropdownMenu.style.display = 'none';
             }
         });
     } else {
-        console.error('Menu button or dropdown menu not found.');
+        console.error('Menu button or dropdown menu element not found in the DOM.');
     }
 
+    // Recipe Fetching Logic
     const categories = document.querySelectorAll('.category');
     const recipesSection = document.getElementById('recipes-section');
     const recipeList = document.getElementById('recipe-list');
@@ -28,14 +32,10 @@ document.addEventListener('DOMContentLoaded', () => {
     const fetchRecipes = async (query) => {
         try {
             const response = await fetch(`/api/search-recipes?q=${encodeURIComponent(query)}`);
-            if (!response.ok) throw new Error(`Failed to fetch: ${response.statusText}`);
+            if (!response.ok) throw new Error('Failed to fetch recipes');
 
             const data = await response.json();
-            if (!data.results || !Array.isArray(data.results)) {
-                throw new Error('Invalid API response format.');
-            }
-
-            return data.results;
+            return data.recipes || [];
         } catch (error) {
             console.error('Error fetching recipes:', error);
             throw error;
@@ -45,14 +45,14 @@ document.addEventListener('DOMContentLoaded', () => {
     // Utility function to render recipes
     const renderRecipes = (recipes, title = '') => {
         if (title) categoryTitle.textContent = title;
-        recipeList.innerHTML = '';
+        recipeList.innerHTML = ''; // Clear previous content
 
         if (recipes.length > 0) {
-            recipes.forEach((recipe) => {
+            recipes.forEach(recipe => {
                 const listItem = document.createElement('li');
                 listItem.innerHTML = `
-                    <h3>${recipe.name || 'Unknown Recipe'}</h3>
-                    <img src="${recipe.thumbnail_url || ''}" alt="${recipe.name}" style="width: 200px;">
+                    <h3>${recipe.name}</h3>
+                    <img src="${recipe.thumbnail_url}" alt="${recipe.name}" style="width: 200px;">
                     <p>
                         <a href="/api/recipe-details/${recipe.id}">View Details</a>
                     </p>
@@ -62,49 +62,83 @@ document.addEventListener('DOMContentLoaded', () => {
                 `;
                 recipeList.appendChild(listItem);
             });
+
+            // Attach event listeners to "Save Recipe" buttons
             attachSaveRecipeListeners();
         } else {
             recipeList.innerHTML = '<p>No recipes found for this search term or category.</p>';
         }
     };
 
-    // Fetch and render recipes
+    // Function to handle fetch and render
     const handleFetchAndRender = async (query, title = '') => {
-        recipeList.innerHTML = '<div class="spinner">Loading...</div>';
+        recipeList.innerHTML = '<div class="spinner"></div>'; // Show spinner
 
         try {
             const recipes = await fetchRecipes(query);
             renderRecipes(recipes, title);
         } catch (error) {
-            recipeList.innerHTML = `<p>Error: ${error.message}</p>`;
+            recipeList.innerHTML = `<p>Error: ${error.message || 'Failed to load recipes. Please try again.'}</p>`;
         }
     };
 
     // Handle category click
-    categories.forEach((category) => {
+    categories.forEach(category => {
         category.addEventListener('click', () => {
             const categoryName = category.dataset.category;
             handleFetchAndRender(categoryName, `${categoryName} Recipes`);
 
+            // Show recipes section and hide categories
             recipesSection.style.display = 'block';
             categoriesSection.style.display = 'none';
         });
     });
 
     // Handle search form submission
-    if (searchForm) {
-        searchForm.addEventListener('submit', (e) => {
-            e.preventDefault();
-            const query = searchForm.querySelector('input[name="q"]').value.trim();
+    searchForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const query = searchForm.querySelector('input[name="q"]').value.trim();
 
-            if (!query) {
-                recipeList.innerHTML = '<p>Please enter a search term.</p>';
-                return;
-            }
+        if (!query) {
+            recipeList.innerHTML = '<p>Please enter a search term.</p>';
+            return;
+        }
 
-            handleFetchAndRender(query);
+        handleFetchAndRender(query);
+    });
+
+    // Attach "Save Recipe" button listeners
+    const attachSaveRecipeListeners = () => {
+        document.querySelectorAll('.save-recipe').forEach(button => {
+            button.addEventListener('click', async () => {
+                const recipeId = button.dataset.id;
+                const recipeName = button.dataset.name;
+
+                try {
+                    const response = await fetch('/save-recipe', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({ recipeId, recipeName }),
+                    });
+
+                    if (response.redirected) {
+                        // Redirect to registration if not logged in
+                        window.location.href = response.url;
+                    } else {
+                        const result = await response.json();
+                        if (result.success) {
+                            alert('Recipe saved successfully!');
+                        } else {
+                            alert('Failed to save recipe.');
+                        }
+                    }
+                } catch (error) {
+                    console.error('Error saving recipe:', error);
+                    alert('An error occurred while saving the recipe. Please try again.');
+                }
+            });
         });
-    } else {
-        console.error('Search form not found in the DOM.');
-    }
+    };
 });

@@ -1,33 +1,56 @@
-### Final Submission Document
+# Recipe Sharing Application
 
-#### Outline
-This project is a Recipe Sharing application that allows users to register, log in, and explore a wide range of recipes. Users can search, save their favorite recipes, and manage their profiles. Built with Node.js and Express.js for the backend and MySQL for data management, the application ensures a secure and seamless user experience.
+## Introduction
+The Recipe Sharing Application allows users to discover, save, and share recipes. The application features user authentication, recipe search functionality, detailed recipe information, and the ability to save favorite recipes.
 
-#### Links and Logins
-- **App URL**: [https://your-app-url.com](https://your-app-url.com)
-- **GitHub Repo**: [https://github.com/your-repo](https://github.com/your-repo)
-- **Credentials**:  
-  - Username: `testuser101`  
-  - Password: `Test@user101`
+This README provides instructions for setting up the application on the Goldsmiths VM and includes information required for submission.
 
-#### Architecture
-The app uses a client-server architecture. The backend, powered by Node.js and Express.js, handles the API and user interactions, while MySQL stores structured data. Sessions are used for secure authentication.
+---
 
-#### Data Model
-- **Users**: Stores usernames and hashed passwords.
-- **Recipes**: Contains recipe details such as name, description, and instructions.
-- **Saved_Recipes**: Tracks recipes saved by users.
+## Features
+- **User Registration and Login**
+- **Recipe Search and Details View**
+- **Save and Manage Favorite Recipes**
+- **Responsive Design** 
 
-#### User Functionality
-- **Search Recipes**: Users can search for recipes by name or category.
-- **Save Recipes**: Save favorite recipes to personal profiles.
-- **Profile Management**: View saved recipes and personalize settings.
+---
 
-#### Security
-The application incorporates bcrypt for password hashing, input validation, and SQL injection prevention. User-specific features are access-controlled via secure sessions.
+## Prerequisites
+To set up and run the application on the Goldsmiths VM, ensure the following:
+- **Node.js** (v14 or later)
+- **npm** (Node Package Manager)
 
-#### API Usage
-The app provides REST API endpoints for searching, retrieving recipe details, and managing saved recipes.
+---
 
-#### Advanced Techniques
-Secure password handling via bcrypt and RESTful API implementation are key technical highlights.
+## Installation Instructions
+
+### 1. Clone the Repository
+Run the following command on the Goldsmiths VM:
+```bash
+git clone https://github.com/mohammedbarre/recipe-sharing.git
+
+Navigate to the project folder and install the required Node.js dependencies:
+
+cd recipe-sharing
+npm install
+
+Run the following command to start the server:
+npm start
+
+By default, the application will be accessible at:   https://doc.gold.ac.uk/usr/107
+
+
+recipe-sharing/
+├── public/                 # Static assets (CSS, JS)
+├── routes/                 # Route handlers
+│   ├── index.js            # Home and general routes
+│   ├── api.js              # API endpoints
+│   ├── auth.js             # Authentication routes
+│   └── saved.js            # Saved recipes routes
+├── views/                  # EJS template files
+│   ├── layout.ejs          # Layout file
+│   ├── search.ejs          # Search page
+│   └── other-pages.ejs     # Other views
+├── app.js                  # Application entry point
+├── package.json            # Project dependencies
+└── README.md               # Project documentation

@@ -36,7 +36,6 @@
 
     <main>
         <h1>Search Recipes</h1>
-
         <!-- Search Form -->
         <form action="/api/search-recipes" method="GET" id="search-form">
             <input type="text" name="q" placeholder="Enter a recipe name or ingredient" required>
@@ -54,6 +53,7 @@
         <p>&copy; 2024 Recipe Sharing App. All rights reserved.</p>
     </footer>
 
+    <!-- Add your JavaScript here -->
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             const form = document.getElementById('search-form');
@@ -65,7 +65,7 @@
 
                 try {
                     // Dynamically build the base URL
-                    const baseUrl = window.location.origin;
+                    const baseUrl = window.location.origin.includes('localhost') ? window.location.origin : `${window.location.origin}/usr/107`;
                     const response = await fetch(`${baseUrl}/api/search-recipes?q=${query}`);
 
                     if (!response.ok) {

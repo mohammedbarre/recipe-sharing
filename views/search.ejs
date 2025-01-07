@@ -1,7 +1,7 @@
 <h1>Search Recipes</h1>
 
 <!-- Search Form -->
-<form action="https://doc.gold.ac.uk/usr/107/api/search-recipes" method="GET" id="search-form">
+<form action="/api/search-recipes" method="GET" id="search-form">
     <input type="text" name="q" placeholder="Enter a recipe name or ingredient" required>
     <button type="submit">Search</button>
 </form>
@@ -22,8 +22,7 @@
             const query = form.querySelector('input[name="q"]').value;
 
             try {
-                // Hardcoded API URL
-                const response = await fetch(`https://doc.gold.ac.uk/usr/107/api/search-recipes?q=${query}`);
+                const response = await fetch(`/api/search-recipes?q=${query}`);
                 const data = await response.json();
 
                 recipeList.innerHTML = '';
@@ -52,7 +51,7 @@
                             }
 
                             try {
-                                const detailsResponse = await fetch(`https://doc.gold.ac.uk/usr/107/api/recipe-details/${recipeId}`);
+                                const detailsResponse = await fetch(`/api/recipe-details/${recipeId}`);
                                 const detailsData = await detailsResponse.json();
 
                                 detailsContainer.innerHTML = `
@@ -75,7 +74,7 @@
                             const recipeName = button.dataset.name;
 
                             try {
-                                const response = await fetch('https://doc.gold.ac.uk/usr/107/save-recipe', {
+                                const response = await fetch('/save-recipe', {
                                     method: 'POST',
                                     headers: {
                                         'Content-Type': 'application/json'

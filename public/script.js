@@ -107,38 +107,4 @@ document.addEventListener('DOMContentLoaded', () => {
         handleFetchAndRender(query);
     });
 
-    // Attach "Save Recipe" button listeners
-    const attachSaveRecipeListeners = () => {
-        document.querySelectorAll('.save-recipe').forEach(button => {
-            button.addEventListener('click', async () => {
-                const recipeId = button.dataset.id;
-                const recipeName = button.dataset.name;
-
-                try {
-                    const response = await fetch('/save-recipe', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                        },
-                        body: JSON.stringify({ recipeId, recipeName }),
-                    });
-
-                    if (response.redirected) {
-                        // Redirect to registration if not logged in
-                        window.location.href = response.url;
-                    } else {
-                        const result = await response.json();
-                        if (result.success) {
-                            alert('Recipe saved successfully!');
-                        } else {
-                            alert('Failed to save recipe.');
-                        }
-                    }
-                } catch (error) {
-                    console.error('Error saving recipe:', error);
-                    alert('An error occurred while saving the recipe. Please try again.');
-                }
-            });
-        });
-    };
 });

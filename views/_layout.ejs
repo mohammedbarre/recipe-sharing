@@ -13,9 +13,10 @@
                 <span class="logo">Recipe Sharing</span>
             </div>
             <div class="nav-right">
-                <a href="/">Home</a>
-                <a href="/about">About</a>
-                <a href="/search">Search Recipes</a>
+                <!-- Updated links with full URLs -->
+                <a href="https://doc.gold.ac.uk/usr/107/">Home</a>
+                <a href="https://doc.gold.ac.uk/usr/107/about">About</a>
+                <a href="https://doc.gold.ac.uk/usr/107/search">Search Recipes</a>
 
                 <% if (user) { %>
                     <!-- Hoverable Dropdown Menu -->
@@ -27,16 +28,16 @@
                         </button>
                         <div class="dropdown-menu" id="dropdownMenu">
                             <ul>
-                                <li><a href="/saved">Saved Recipes</a></li>
-                                <li><a href="/profile">Profile</a></li>
-                                <li><a href="/auth/logout">Logout</a></li>
+                                <li><a href="https://doc.gold.ac.uk/usr/107/saved">Saved Recipes</a></li>
+                                <li><a href="https://doc.gold.ac.uk/usr/107/profile">Profile</a></li>
+                                <li><a href="https://doc.gold.ac.uk/usr/107/auth/logout">Logout</a></li>
                             </ul>
                         </div>
                     </div>
                 <% } else { %>
                     <!-- Logged-Out State -->
-                    <a href="/auth/login">Login</a>
-                    <a href="/auth/register">Register</a>
+                    <a href="https://doc.gold.ac.uk/usr/107/auth/login">Login</a>
+                    <a href="https://doc.gold.ac.uk/usr/107/auth/register">Register</a>
                 <% } %>
             </div>
         </nav>

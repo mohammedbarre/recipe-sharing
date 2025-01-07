@@ -34,7 +34,9 @@
         const recipeName = this.dataset.recipeName;
 
         try {
-            const response = await fetch('/save-recipe', {
+            // Updated with full URL for the server endpoint
+            const baseUrl = window.location.origin.includes('localhost') ? window.location.origin : `${window.location.origin}/usr/107`;
+            const response = await fetch(`${baseUrl}/save-recipe`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ recipeId, recipeName }),
@@ -42,7 +44,7 @@
 
             if (response.ok) {
                 alert('Recipe saved successfully!');
-                window.location.href = '/saved-recipes'; // Redirect to saved recipes page
+                window.location.href = `${baseUrl}/saved-recipes`; // Redirect to saved recipes page
             } else {
                 alert('Failed to save recipe.');
             }

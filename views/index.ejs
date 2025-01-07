@@ -13,9 +13,10 @@
                 <span class="logo">Recipe Sharing</span>
             </div>
             <div class="nav-right">
-                <a href="/">Home</a>
-                <a href="/about">About</a>
-                <a href="/search">Search Recipes</a>
+                <!-- Updated links with absolute URLs -->
+                <a href="https://doc.gold.ac.uk/usr/107/">Home</a>
+                <a href="https://doc.gold.ac.uk/usr/107/about">About</a>
+                <a href="https://doc.gold.ac.uk/usr/107/search">Search Recipes</a>
                 <% if (user) { %>
 
                     <div class="dropdown">
@@ -26,15 +27,15 @@
                         </button>
                         <div class="dropdown-menu" id="dropdownMenu">
                             <ul>
-                                <li><a href="/saved">Saved Recipes</a></li>
-                                <li><a href="/profile">Profile</a></li>
-                                <li><a href="/auth/logout">Logout</a></li>
+                                <li><a href="https://doc.gold.ac.uk/usr/107/saved">Saved Recipes</a></li>
+                                <li><a href="https://doc.gold.ac.uk/usr/107/profile">Profile</a></li>
+                                <li><a href="https://doc.gold.ac.uk/usr/107/auth/logout">Logout</a></li>
                             </ul>
                         </div>
                     </div>
                 <% } else { %>
                     <!-- Logged-Out State -->
-                    <a href="/auth/register">Register</a>
+                    <a href="https://doc.gold.ac.uk/usr/107/auth/register">Register</a>
                 <% } %>
             </div>
         </nav>
@@ -46,14 +47,14 @@
             <h1>Welcome to Recipe Sharing</h1>
             <p>Discover, save, and share your favorite recipes with ease!</p>
             <% if (!user) { %>
-            <form class="center-form" method="POST" action="/auth/login">
+            <form class="center-form" method="POST" action="https://doc.gold.ac.uk/usr/107/auth/login">
                 <input type="text" name="username" placeholder="Enter your username" required />
                 <input type="password" name="password" placeholder="Enter your password" required />
                 <button type="submit">Login</button>
             </form>
             <% } else { %>
             <p>Welcome back, <%= user.username %>!</p>
-            <button onclick="window.location.href='/search'">Explore Recipes</button>
+            <button onclick="window.location.href='https://doc.gold.ac.uk/usr/107/search'">Explore Recipes</button>
             <% } %>
         </section>
     </main>

@@ -22,6 +22,13 @@ app.use(session({
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
 
+// Helper for base URL (used for dynamic URL generation)
+app.use((req, res, next) => {
+    const baseUrl = req.get('host').includes('localhost') ? '' : '/usr/107';
+    res.locals.baseUrl = baseUrl;
+    next();
+});
+
 // Routes
 app.use('/', require('./routes/index'));
 app.use('/api', require('./routes/api'));
@@ -35,4 +42,7 @@ app.use((req, res) => {
 
 // Start Server
 const PORT = process.env.PORT || 8000;
-app.listen(PORT, () => console.log(`Server running on http://localhost:${PORT}`));
+app.listen(PORT, () => {
+    const base = process.env.NODE_ENV === 'development' ? `http://localhost:${PORT}` : 'https://doc.gold.ac.uk/usr/107';
+    console.log(`Server running on ${base}`);
+});

@@ -1,7 +1,7 @@
 <h1>Saved Recipes</h1>
 
 <!-- Search Form -->
-<form action="/saved" method="GET" id="saved-search-form">
+<form action="<%= window.location.origin.includes('localhost') ? '' : '/usr/107' %>/saved" method="GET" id="saved-search-form">
     <input type="text" name="q" placeholder="Search your saved recipes" value="<%= query %>" required>
     <button type="submit">Search</button>
 </form>
@@ -23,58 +23,62 @@
 </ul>
 
 <script>
-    // View Details Logic
-    document.querySelectorAll('.view-details').forEach(button => {
-        button.addEventListener('click', async (e) => {
-            const recipeId = button.dataset.id;
-            const detailsContainer = document.getElementById(`details-${recipeId}`);
+    document.addEventListener('DOMContentLoaded', () => {
+        const baseUrl = window.location.origin.includes('localhost') ? window.location.origin : `${window.location.origin}/usr/107`;
 
-            // Toggle visibility
-            if (detailsContainer.style.display === 'block') {
-                detailsContainer.style.display = 'none';
-                return;
-            }
+        // View Details Logic
+        document.querySelectorAll('.view-details').forEach(button => {
+            button.addEventListener('click', async (e) => {
+                const recipeId = button.dataset.id;
+                const detailsContainer = document.getElementById(`details-${recipeId}`);
 
-            try {
-                const response = await fetch(`/recipe-details/${recipeId}`);
-                const data = await response.json();
-
-                detailsContainer.innerHTML = `
-                    <p><strong>Description:</strong> ${data.description}</p>
-                    <h4>Ingredients:</h4>
-                    <ul>${data.ingredients.map(ing => `<li>${ing}</li>`).join('')}</ul>
-                    <h4>Instructions:</h4>
-                    <ol>${data.instructions.map(step => `<li>${step}</li>`).join('')}</ol>
-                `;
-                detailsContainer.style.display = 'block';
-            } catch (error) {
-                console.error('Error fetching recipe details:', error);
-                detailsContainer.innerHTML = '<p>Failed to load recipe details.</p>';
-            }
-        });
-    });
-
-    // Remove Recipe Logic
-    document.querySelectorAll('.remove-recipe').forEach(button => {
-        button.addEventListener('click', async (e) => {
-            const recipeId = button.dataset.id;
-            try {
-                const response = await fetch('/remove-recipe', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ recipeId })
-                });
-                const data = await response.json();
-                if (data.success) {
-                    alert('Recipe removed successfully');
-                    window.location.reload();
-                } else {
-                    alert('Failed to remove recipe');
+                // Toggle visibility
+                if (detailsContainer.style.display === 'block') {
+                    detailsContainer.style.display = 'none';
+                    return;
                 }
-            } catch (error) {
-                console.error('Error removing recipe:', error);
-                alert('An error occurred. Please try again.');
-            }
+
+                try {
+                    const response = await fetch(`${baseUrl}/recipe-details/${recipeId}`);
+                    const data = await response.json();
+
+                    detailsContainer.innerHTML = `
+                        <p><strong>Description:</strong> ${data.description}</p>
+                        <h4>Ingredients:</h4>
+                        <ul>${data.ingredients.map(ing => `<li>${ing}</li>`).join('')}</ul>
+                        <h4>Instructions:</h4>
+                        <ol>${data.instructions.map(step => `<li>${step}</li>`).join('')}</ol>
+                    `;
+                    detailsContainer.style.display = 'block';
+                } catch (error) {
+                    console.error('Error fetching recipe details:', error);
+                    detailsContainer.innerHTML = '<p>Failed to load recipe details.</p>';
+                }
+            });
+        });
+
+        // Remove Recipe Logic
+        document.querySelectorAll('.remove-recipe').forEach(button => {
+            button.addEventListener('click', async (e) => {
+                const recipeId = button.dataset.id;
+                try {
+                    const response = await fetch(`${baseUrl}/remove-recipe`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ recipeId })
+                    });
+                    const data = await response.json();
+                    if (data.success) {
+                        alert('Recipe removed successfully');
+                        window.location.reload();
+                    } else {
+                        alert('Failed to remove recipe');
+                    }
+                } catch (error) {
+                    console.error('Error removing recipe:', error);
+                    alert('An error occurred. Please try again.');
+                }
+            });
         });
     });
 </script>

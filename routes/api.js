@@ -7,6 +7,12 @@ const TASTY_API_BASE_URL = 'https://tasty.p.rapidapi.com/recipes/list';
 const TASTY_API_HOST = 'tasty.p.rapidapi.com';
 const TASTY_API_KEY = '3711375463msh659873d468ffe12p1bb860jsn11e89a12800f';
 
+// Helper function to dynamically get the base URL
+const getBaseUrl = (req) => {
+    const host = req.get('host');
+    return host.includes('localhost') ? '' : '/usr/107';
+};
+
 // Search Recipes from Tasty API
 router.get('/search-recipes', async (req, res) => {
     const query = req.query.q || ''; // Get search query from request

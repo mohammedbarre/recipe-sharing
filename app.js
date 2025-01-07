@@ -31,7 +31,7 @@ app.use('/saved', require('./routes/saved')); // Saved recipes routes
 // Handle 404 Error
 app.use((req, res) => {
     res.status(404).send('Page Not Found');
-});
+}); 
 
 // Start Server
 const PORT = process.env.PORT || 8000;

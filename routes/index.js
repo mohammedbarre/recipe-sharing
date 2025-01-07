@@ -185,4 +185,9 @@ router.get('/saved', isAuthenticated, async (req, res) => {
     }
 });
 
+//about page route
+router.get('/about', (req, res) => {
+    res.render('_layout', { view: 'about', title: 'About', user: req.session.user });
+});
+
 module.exports = router;

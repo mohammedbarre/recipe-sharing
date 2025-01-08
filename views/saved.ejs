@@ -1,7 +1,7 @@
 <h1>Saved Recipes</h1>
 
 <!-- Search Form -->
-<form action="<%= window.location.origin.includes('localhost') ? '' : '/usr/107' %>/saved" method="GET" id="saved-search-form">
+<form action="https://doc.gold.ac.uk/usr/107/saved" method="GET" id="saved-search-form">
     <input type="text" name="q" placeholder="Search your saved recipes" value="<%= query %>" required>
     <button type="submit">Search</button>
 </form>
@@ -24,7 +24,7 @@
 
 <script>
     document.addEventListener('DOMContentLoaded', () => {
-        const baseUrl = window.location.origin.includes('localhost') ? window.location.origin : `${window.location.origin}/usr/107`;
+        const baseUrl = "https://doc.gold.ac.uk/usr/107";
 
         // View Details Logic
         document.querySelectorAll('.view-details').forEach(button => {

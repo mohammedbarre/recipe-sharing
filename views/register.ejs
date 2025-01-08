@@ -1,6 +1,6 @@
 <h1>Register</h1>
 
-<form action="<%= window.location.origin.includes('localhost') ? '' : '/usr/107' %>/auth/register" method="POST" id="registration-form">
+<form action="https://doc.gold.ac.uk/usr/107/auth/register" method="POST" id="registration-form">
     <label for="username">Username:</label>
     <input type="text" name="username" id="username" required>
 
@@ -19,7 +19,7 @@
     <button type="submit" id="register-button" disabled>Register</button>
 </form>
 
-<p>Already have an account? <a href="<%= window.location.origin.includes('localhost') ? '' : '/usr/107' %>/auth/login">Login</a></p>
+<p>Already have an account? <a href="https://doc.gold.ac.uk/usr/107/auth/login">Login</a></p>
 
 <script>
     document.addEventListener('DOMContentLoaded', () => {

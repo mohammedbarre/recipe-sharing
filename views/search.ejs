@@ -13,22 +13,23 @@
                 <span class="logo">Recipe Sharing</span>
             </div>
             <div class="nav-right">
-                <a href="<%= window.location.origin.includes('localhost') ? '' : '/usr/107' %>/">Home</a>
-                <a href="<%= window.location.origin.includes('localhost') ? '' : '/usr/107' %>/about">About</a>
-                <a href="<%= window.location.origin.includes('localhost') ? '' : '/usr/107' %>/search">Search Recipes</a>
+                <!-- Hardcoded URLs -->
+                <a href="https://doc.gold.ac.uk/usr/107/">Home</a>
+                <a href="https://doc.gold.ac.uk/usr/107/about">About</a>
+                <a href="https://doc.gold.ac.uk/usr/107/search">Search Recipes</a>
                 <% if (user) { %>
                     <div class="dropdown">
                         <button class="menu-button" id="menuButton">Menu</button>
                         <div class="dropdown-menu" id="dropdownMenu" style="display: none;">
                             <ul>
-                                <li><a href="<%= window.location.origin.includes('localhost') ? '' : '/usr/107' %>/saved">Saved Recipes</a></li>
-                                <li><a href="<%= window.location.origin.includes('localhost') ? '' : '/usr/107' %>/profile">Profile</a></li>
-                                <li><a href="<%= window.location.origin.includes('localhost') ? '' : '/usr/107' %>/auth/logout">Logout</a></li>
+                                <li><a href="https://doc.gold.ac.uk/usr/107/saved">Saved Recipes</a></li>
+                                <li><a href="https://doc.gold.ac.uk/usr/107/profile">Profile</a></li>
+                                <li><a href="https://doc.gold.ac.uk/usr/107/auth/logout">Logout</a></li>
                             </ul>
                         </div>
                     </div>
                 <% } else { %>
-                    <a href="<%= window.location.origin.includes('localhost') ? '' : '/usr/107' %>/auth/register">Register</a>
+                    <a href="https://doc.gold.ac.uk/usr/107/auth/register">Register</a>
                 <% } %>
             </div>
         </nav>
@@ -38,7 +39,7 @@
         <h1>Search Recipes</h1>
 
         <!-- Search Form -->
-        <form action="<%= window.location.origin.includes('localhost') ? '' : '/usr/107' %>/api/search-recipes" method="GET" id="search-form">
+        <form action="https://doc.gold.ac.uk/usr/107/api/search-recipes" method="GET" id="search-form">
             <input type="text" name="q" placeholder="Enter a recipe name or ingredient" required>
             <button type="submit">Search</button>
         </form>
@@ -64,9 +65,8 @@
                 const query = form.querySelector('input[name="q"]').value;
 
                 try {
-                    const baseUrl = window.location.origin.includes('localhost')
-                        ? window.location.origin
-                        : `${window.location.origin}/usr/107`;
+                    // Use hardcoded base URL
+                    const baseUrl = "https://doc.gold.ac.uk/usr/107";
 
                     const response = await fetch(`${baseUrl}/api/search-recipes?q=${query}`);
                     if (!response.ok) {

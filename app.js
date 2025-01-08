@@ -18,6 +18,15 @@ app.use(session({
     saveUninitialized: true,
 }));
 
+// Middleware to set baseUrl for EJS templates
+app.use((req, res, next) => {
+    const baseUrl = req.hostname.includes('localhost')
+        ? '' 
+        : '/usr/107';
+    res.locals.baseUrl = baseUrl;
+    next();
+});
+
 // View Engine
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));

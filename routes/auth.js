@@ -14,7 +14,7 @@ router.post('/register', async (req, res) => {
     try {
         const hashedPassword = await bcrypt.hash(password, 10);
         await db.query('INSERT INTO users (username, password) VALUES (?, ?)', [username, hashedPassword]);
-        res.redirect('/auth/login');
+        res.redirect('/usr/107/auth/login'); // Updated redirect
     } catch (error) {
         console.error('Error during registration:', error.message);
         res.status(500).send('An error occurred during registration.');
@@ -33,7 +33,7 @@ router.post('/login', async (req, res) => {
         const [users] = await db.query('SELECT * FROM users WHERE username = ?', [username]);
 
         if (users.length === 0) {
-            return res.redirect('/auth/login');
+            return res.redirect('/usr/107/auth/login'); // Updated redirect
         }
 
         const user = users[0];
@@ -41,9 +41,9 @@ router.post('/login', async (req, res) => {
 
         if (isPasswordValid) {
             req.session.user = user;
-            res.redirect('/');
+            res.redirect('/usr/107/'); // Updated redirect
         } else {
-            res.redirect('/auth/login');
+            res.redirect('/usr/107/auth/login'); // Updated redirect
         }
     } catch (error) {
         console.error('Error during login:', error.message);
@@ -54,7 +54,7 @@ router.post('/login', async (req, res) => {
 // Change Password
 router.get('/change-password', (req, res) => {
     if (!req.session.user) {
-        return res.redirect('/auth/login');
+        return res.redirect('/usr/107/auth/login'); // Updated redirect
     }
     res.render('_layout', { view: 'change-password', title: 'Change Password', user: req.session.user });
 });
@@ -64,7 +64,7 @@ router.post('/change-password', async (req, res) => {
 
     try {
         if (!req.session.user) {
-            return res.redirect('/auth/login');
+            return res.redirect('/usr/107/auth/login'); // Updated redirect
         }
 
         const [users] = await db.query('SELECT * FROM users WHERE id = ?', [req.session.user.id]);
@@ -102,7 +102,7 @@ router.post('/change-password', async (req, res) => {
 // Logout User
 router.get('/logout', (req, res) => {
     req.session.destroy();
-    res.redirect('/');
+    res.redirect('/usr/107/'); // Updated redirect
 });
 
 module.exports = router;
